@@ -28,15 +28,28 @@ $router->post('/boards', 'BoardController@store');
 
 //List Routes
 $router->get('/boards/{boardId}/list', 'ListController@index');
-$router->get('/boards/{boardId}/list/{listId}', 'ListController@show');
+$router->get('/boards/{board}/list/{list}', 'ListController@show');
 $router->put('/boards/{boardId}/list/{listId}', 'ListController@update');
 $router->delete('/boards/{boardId}/list/{listId}', 'ListController@destroy');
 $router->post('/boards/{boardId}/list', 'ListController@store');
 
 //Card Routes
 $router->get('/boards/{boardId}/list/{listId}/card', 'CardController@index');
-$router->get('/boards/{boardId}/list/{listId}/card/{cardId}', 'CardController@show');
-$router->put('/boards/{boardId}/list/{listId}/card/{cardId}', 'CardController@update');
-$router->delete('/boards/{boardId}/list/{listId}/card/{cardId}', 'CardController@destroy');
+$router->get('/card/{cardId}', 'CardController@show');
+$router->put('/card/{cardId}', 'CardController@update');
+$router->put('/card/{cardId}/list/{listId}', 'CardController@updateList');
+$router->delete('/card/{cardId}', 'CardController@destroy');
 $router->post('/boards/{boardId}/list/{listId}/card', 'CardController@store');
+$router->patch('/card/update-all', 'CardController@updateAll');
+
+//Comment Routes
+$router->get('/card/{cardId}/comment', 'CommentController@index');
+$router->get('/comment/{commentId}', 'CommentController@show');
+$router->put('/comment/{commentId}', 'CommentController@update');
+$router->delete('/comment/{commentId}', 'CommentController@destroy');
+$router->post('/card/{cardId}/comment', 'CommentController@store');
+$router->patch('/card/update-all', 'CommentController@updateAll');
+
+//get the user information
+$router->get('/users','AuthController@userinfo');
 

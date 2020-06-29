@@ -57,4 +57,21 @@ class AuthController extends Controller
 
 
     }
+    public function userinfo(Request $request)
+    {
+        //dd($request);
+        $api_token = $request->api_token;
+        //dd($api_token);
+        $user = User::where('api_token', $api_token)->first();
+
+        if (!$user){
+            return response()->json(['status'=>'error','message'=> 'Not Logged in'],401);
+        }
+
+        return response()->json(['status'=>'success','user'=> $user],200);
+
+
+    }
+
+
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Board;
 use App\Models\Lists;
+use App\Models\Card;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ class ListController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+       $this->middleware('auth');
     }
     public function index($boardId)
     {
@@ -27,25 +28,28 @@ class ListController extends Controller
         return response()->json(['lists' => $board->lists]);
     }
 
-    public function show($boardId,$listId)
+    public function show(Board $board, Lists $list)
     {
-        $board = Board::findOrFail($boardId);
+        if ($list->board->is($board))
         if(Auth::user()->id !== $board->user_id){
             return response()->json(['status' => 'error','message'=>'Unauthorized'], 401);
         }
-        $list = $board->lists()->find($listId);
 
         return response()->json(['status' => 'success', 'list' => $list]);
     }
 
     public function store(Request $request, $boardId)
     {
-        $board = Board::findOrFail($boardId);
+        $board = Board::find($boardId);
+        if(Auth::user()->id !== $board->user_id){
+            return response()->json(['status' => 'error','message'=>'Unauthorized'], 401);
+        }
 
-        $board()->lists()->create([
+        $newList =$board->lists()->create([
             'name' => $request->name,
+            'board_id' =>$boardId
         ]);
-        return response()->json(['message' => 'success'], 200);
+        return response()->json(['message' => 'success','list'=>$newList], 200);
     }
     public function update(Request $request, $boardId, $listId)
     {
@@ -66,9 +70,15 @@ class ListController extends Controller
             return response()->json(['status' => 'error','message'=>'Unauthorized'], 401);
         }
         $list = Lists::findOrFail($listId);
-        if($list->destroy($listId)) {
+        //$list->cards->delete();
+//         foreach ($cards as $card){
+//             $card->destroy($card.id);
+//             $card->save();
+//        }
+        if($list->delete($listId)) {
             return response()->json(['status' => 'success','message'=>'List Deleted successfully'], 200);
         }
+
         return response()->json(['status' => 'error','message'=>'Somthing went WRONG'], 404);
     }
 }

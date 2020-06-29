@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Board;
+use App\Models\Card;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -34,5 +35,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function boards()
     {
         return $this->hasMany(Board::class);
+    }
+    public function cards()
+    {
+        return $this->hasMany(Card::class);
     }
 }

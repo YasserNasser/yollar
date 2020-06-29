@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\User;
 use App\Models\Lists;
+use App\Models\Card;
 use Illuminate\Database\Eloquent\Model;
 
 class Board extends Model  {
@@ -27,6 +28,9 @@ class Board extends Model  {
     public function lists()
     {
         return $this->hasMany(Lists::class);
+    }
+    public function cards(){
+         return $this ->hasManyThrough(Card::class,Lists::class,'board_id','lists_id','id','id');
     }
 
 }

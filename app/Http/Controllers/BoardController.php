@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Models\Board;
+use App\Models\Card;
+use App\Models\Lists;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +20,11 @@ class BoardController extends Controller
     }
     public function index()
     {
-       return Auth::user()->boards;
+        $boardsData = Auth::user()->boards->load(['lists.cards'=> function($query){
+            $query->orderBy('priority','asc');
+        }]);
+        //$boardsData['comments'] = $boardsData->lists->cards->comments;
+       return response()->json(['status' => 'success','boards'=>$boardsData], 200);
     }
 
     public function show($boardId)
@@ -32,10 +38,10 @@ class BoardController extends Controller
 
     public function store(Request $request)
     {
-        Auth::user()->boards()->create([
+       $board = Auth::user()->boards()->create([
             'name' => $request->name,
         ]);
-        return response()->json(['message' => 'success'], 200);
+        return response()->json(['message' => 'success' ,'board'=>$board], 200);
     }
     public function update(Request $request, $boardId)
     {
@@ -54,7 +60,12 @@ class BoardController extends Controller
         if(Auth::user()->id !== $board->user_id){
             return response()->json(['status' => 'error','message'=>'Unauthorized'], 401);
         }
-        if(Board::destroy($boardId)) {
+        //$lists = $board->lists();
+        // we get cards with hasManyThrough relation ship between board ->lists->cards
+//        $cards = $board->cards();
+//        $cards->delete();
+//        $lists->delete();
+        if($board->delete()) {
             return response()->json(['status' => 'success','message'=>'Board Deleted successfully'], 200);
         }
         return response()->json(['status' => 'error','message'=>'Somthing went WRONG'], 404);
